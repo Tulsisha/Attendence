@@ -1,2 +1,2 @@
 # Attendence
-This is Attendance  Panle project related to Django
+This is Attendance Panle project based on Django technology
