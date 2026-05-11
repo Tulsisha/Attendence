@@ -1,0 +1,130 @@
+body {
+      background-color: #dbeafe; /* light blue background */
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 255px;
+      background-color: #000000; /* dark blue */
+      color: white;
+      padding-top: 20px;
+    }
+
+    .sidebar .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+   .sidebar ul li {
+    padding: 12px 20px;
+    border-radius: 5px;
+    transition: background 0.3s;
+    border-bottom: 1px solid #efefef47;
+    margin-bottom: 16px;
+}
+
+    .sidebar ul li:hover {
+      background-color: #3b82f6; /* light blue hover */
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Top Navbar */
+    .topbar {
+      margin-left: 254px;
+      background-color: #000000;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar .welcome {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background-color: white;
+      padding: 3px;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 230px;
+      padding: 30px;
+    }
+
+    /* Removed box and shadow */
+    .punch-box {
+      padding: 40px;
+      border-radius: 10px;
+      text-align: left; /* left align */
+    }
+
+    .punch-button {
+      background-color: #2563eb;
+      color: white;
+      font-size: 36px;
+      font-weight: bold;
+      border: none;
+      border-radius: 50%;
+      width: 200px;
+      height: 200px;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .punch-button:hover {
+      transform: scale(1.05);
+      background-color: #1e40af;
+    }
+    .punchBtnstyle {
+    height: 175px;
+    width: 190px;
+    border-radius: 52%;
+    font-size: 30px;
+    font-weight: 700;
+    margin-left: 20px;
+}
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .main-content, .topbar {
+        margin-left: 0;
+      }
+    }
+  /* #leaveSection {
+    margin-left: 293px;
+    position: relative;
+    margin-right: 57px;
+} */

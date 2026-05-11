@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table class="table">
+  <tr>
+    <th>User</th><th>Date</th><th>Punch In</th><th>Punch Out</th><th>Day</th>
+  </tr>
+  {% for r in records %}
+  <tr>
+    <td>{{ r.user.username }}</td>
+    <td>{{ r.date }}</td>
+    <td>{{ r.punch_in }}</td>
+    <td>{{ r.punch_out }}</td>
+    <td>{{ r.day }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>
