@@ -262,7 +262,9 @@ function renderAttendanceTable() {
   const currentYear = today.getFullYear();
   const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  for (let day = 1; day <= totalDays; day++) {
+  const todayDate = today.getDate();
+
+for (let day = 1; day <= todayDate; day++) {
     const dateObj = new Date(currentYear, currentMonth, day);
     const date = dateObj.toISOString().split("T")[0];
     const dayName = dateObj.toLocaleString("en-US", { weekday: "long" });
@@ -278,10 +280,14 @@ function renderAttendanceTable() {
       status = "Holiday";
       bgColor = "black";
     }
-    else if (!record) {
-      status = "Absent";
-      bgColor = "orange";
-    }
+  else if (!record && dateObj < today) {
+  status = "Absent";
+  bgColor = "orange";
+}
+else if (!record && dateObj.toDateString() === today.toDateString()) {
+  status = "";
+  bgColor = "";
+}
     else {
       punchIn = record.punchIn || "-";
       punchOut = record.punchOut || "-";
