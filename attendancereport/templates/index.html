@@ -56,13 +56,14 @@
       <h4>Attendance Record</h4>
       <table class="table table-bordered mt-3 bg-white">
         <thead class="table-primary">
-          <tr>
-            <th>Date</th>
-            <th>Punch In</th>
-            <th>Punch Out</th>
-            <th>Day</th>
-          </tr>
-        </thead>
+  <tr>
+    <th>Date</th>
+    <th>Day</th>
+    <th>Punch In</th>
+    <th>Punch Out</th>
+    <th>Status</th>
+  </tr>
+</thead>
         <tbody id="attendanceTableBody"></tbody>
       </table>
     </div>
@@ -118,15 +119,15 @@
 
     <h5 class="mt-4">Leave History</h5>
     <table class="table table-bordered bg-white">
-        <thead class="table-warning">
-            <tr>
-                <th>Leave Type</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Total Days</th>
-                <th>Status</th>
-            </tr>
-        </thead>
+        <thead class="table-primary">
+  <tr>
+    <th>Date</th>
+    <th>Day</th>
+    <th>Punch In</th>
+    <th>Punch Out</th>
+    <th>Status</th>
+  </tr>
+</thead>
         <tbody id="leaveTableBody"></tbody>
     </table>
 </div>
@@ -240,89 +241,112 @@ punchBtn.addEventListener("click", () => {
 
 /* ===================== ATTENDANCE TABLE ===================== */
 function renderAttendanceTable() {
-  console.log("renderAttendanceTable running");
-
   attendanceTable.innerHTML = "";
 
-  attendanceRecords.forEach(r => {
-    const tr = document.createElement("tr");
+  function toMinutes(timeStr) {
+    if (!timeStr || timeStr === "-") return null;
 
-    /* ---------- SAFE TIME TO MINUTES ---------- */
-    function toMinutes(timeStr) {
-      if (!timeStr || timeStr === "-") return null;
+    const [time, meridian] = timeStr.split(" ");
+    if (!time || !meridian) return null;
 
-      const [time, meridian] = timeStr.split(" ");
-      if (!time || !meridian) return null;
+    let [h, m] = time.split(":").map(Number);
 
-      let [h, m] = time.split(":").map(Number);
+    if (meridian === "PM" && h !== 12) h += 12;
+    if (meridian === "AM" && h === 12) h = 0;
 
-      if (meridian === "PM" && h !== 12) h += 12;
-      if (meridian === "AM" && h === 12) h = 0;
+    return h * 60 + m;
+  }
 
-      return h * 60 + m;
-    }
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+  const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-    const punchInMin  = toMinutes(r.punchIn);
-    const punchOutMin = toMinutes(r.punchOut);
+  for (let day = 1; day <= totalDays; day++) {
+    const dateObj = new Date(currentYear, currentMonth, day);
+    const date = dateObj.toISOString().split("T")[0];
+    const dayName = dateObj.toLocaleString("en-US", { weekday: "long" });
 
-    console.log(r.date, punchInMin, punchOutMin);
+    let record = attendanceRecords.find(r => r.date === date);
 
-    /* ---------- OFFICE RULES ---------- */
-    const GREEN_START = 9 * 60 + 15;   // 9:15
-    const GREEN_END   = 9 * 60 + 35;   // 9:35
-    const RED_END     = 12 * 60;       // 12:00
-    const HALF_END    = 14 * 60 + 5;   // 2:05
-    const OFFICE_OUT  = 18 * 60 + 30;  // 6:30
-
+    let punchIn = "-";
+    let punchOut = "-";
+    let status = "";
     let bgColor = "";
 
-    /* ---------- COLOR LOGIC ---------- */
-    if (r.day === "Sunday") {
-      bgColor = "#bdbdbd"; // Grey
+    if (dayName === "Sunday") {
+      status = "Holiday";
+      bgColor = "black";
     }
-    else if (!r.punchIn || r.punchIn === "-") {
-      bgColor = "yellow"; // Absent
-    }
-    else if (punchInMin >= GREEN_START && punchInMin <= GREEN_END) {
-      bgColor = "lightgreen"; // On time
-    }
-    else if (punchInMin > GREEN_END && punchInMin <= RED_END) {
-      bgColor = "red"; // Late
-    }
-    else if (punchInMin > RED_END && punchInMin <= HALF_END) {
-      bgColor = "brown"; // Half day
+    else if (!record) {
+      status = "Absent";
+      bgColor = "orange";
     }
     else {
-      bgColor = "red";
+      punchIn = record.punchIn || "-";
+      punchOut = record.punchOut || "-";
+
+      const punchInMin = toMinutes(punchIn);
+      const punchOutMin = toMinutes(punchOut);
+
+      const OFFICE_START = 9 * 60 + 45; // 9:45
+      const HALF_DAY_TIME = 13 * 60 + 30; // 1:30
+
+      if (punchOut === "-") {
+        status = "In Progress";
+        bgColor = "teal";
+      }
+      else if (punchOutMin <= HALF_DAY_TIME) {
+        status = "Half Day";
+        bgColor = "brown";
+      }
+      else if (punchInMin <= OFFICE_START) {
+        status = "Present";
+        bgColor = "green";
+      }
+      else {
+        status = "Late";
+        bgColor = "red";
+      }
     }
 
-    /* ---------- EARLY PUNCH OUT OVERRIDE ---------- */
-    if (
-      r.punchOut &&
-      r.punchOut !== "-" &&
-      punchOutMin < OFFICE_OUT &&
-      r.day !== "Sunday"
-    ) {
-      bgColor = "red";
-    }
+    const tr = document.createElement("tr");
 
-    /* ---------- APPLY COLOR FORCEFULLY ---------- */
-    tr.innerHTML = `
-      <td>${r.date}</td>
-      <td>${r.punchIn}</td>
-      <td>${r.punchOut}</td>
-      <td>${r.day}</td>
-    `;
+   const rowColors = {
+  "Present": "#d4edda",      // light green
+  "Late": "#f8d7da",         // light red
+  "Half Day": "#d2b48c",     // brown
+  "In Progress": "#d1f2eb",  // teal
+  "Absent": "#ffe5b4",       // orange
+  "Holiday": "#d6d6d6"       // grey
+};
 
-    tr.querySelectorAll("td").forEach(td => {
-      td.style.setProperty("background-color", bgColor, "important");
-      td.style.color = bgColor === "brown" ? "white" : "black";
-    });
+tr.style.backgroundColor = rowColors[status];
+
+tr.innerHTML = `
+  <td>${date}</td>
+  <td>${dayName}</td>
+  <td>${punchIn}</td>
+  <td>${punchOut}</td>
+  <td>
+    <span style="
+      background:${bgColor};
+      color:white;
+      padding:6px 12px;
+      border-radius:8px;
+      font-weight:600;
+      display:inline-block;
+      min-width:120px;
+      text-align:center;
+    ">
+      ${status}
+    </span>
+  </td>
+`;
 
     attendanceTable.appendChild(tr);
-  });
+  }
 }
-
 /* ---------- RUN DATE FIX ONLY ONCE ---------- */
 attendanceRecords = attendanceRecords.map(r => {
   if (r.date && r.date.includes("/")) {

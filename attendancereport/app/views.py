@@ -132,15 +132,9 @@ def monthly_attendance(request):
     year = request.GET.get("year")
 
     today = now()
-    if not month:
-        month = today.month
-    if not year:
-        year = today.year
+    month = int(month) if month else today.month
+    year = int(year) if year else today.year
 
-    month = int(month)
-    year = int(year)
-
-    import calendar
     total_days = calendar.monthrange(year, month)[1]
 
     records = DailyAttendance.objects.filter(
@@ -149,18 +143,21 @@ def monthly_attendance(request):
         date__month=month
     )
 
-    record_dict = {r.date.day: r for r in records}
+    record_dict = {r.date: r for r in records}
 
-    office_start = datetime.time(9, 45)  # 9:45 AM
+    office_start = datetime.time(9, 45)   # 9:45 AM
+    half_day_out = datetime.time(13, 30)  # 1:30 PM
 
     monthly_data = []
+
     for day in range(1, total_days + 1):
         date_obj = datetime.date(year, month, day)
 
-        # Check Sunday (Holiday)
-        if date_obj.weekday() == 6:  
+        # Sunday Holiday
+        if date_obj.weekday() == 6:
             monthly_data.append({
                 "day": day,
+                "date": date_obj,
                 "punch_in": "-",
                 "punch_out": "-",
                 "status": "holiday",
@@ -168,34 +165,51 @@ def monthly_attendance(request):
             })
             continue
 
-        rec = record_dict.get(day)
+        rec = record_dict.get(date_obj)
 
-        if rec:
-            # Present or Late
-            if rec.punch_in and rec.punch_in <= office_start:
-                status = "present"
-                color = "green"
-            else:
-                status = "late"
-                color = "red"
-
+        # No attendance = Absent
+        if not rec:
             monthly_data.append({
                 "day": day,
-                "punch_in": rec.punch_in.strftime("%H:%M:%S") if rec.punch_in else "-",
-                "punch_out": rec.punch_out.strftime("%H:%M:%S") if rec.punch_out else "-",
-                "status": status,
-                "color": color
-            })
-
-        else:
-            # Absent
-            monthly_data.append({
-                "day": day,
+                "date": date_obj,
                 "punch_in": "-",
                 "punch_out": "-",
                 "status": "absent",
-                "color": "yellow"
+                "color": "orange"
             })
+            continue
+
+        punch_in_time = rec.punch_in.time() if rec.punch_in else None
+        punch_out_time = rec.punch_out.time() if rec.punch_out else None
+
+        # No punch out
+        if not punch_out_time:
+            status = "in_progress"
+            color = "teal"
+
+        # Half day
+        elif punch_out_time <= half_day_out:
+            status = "half_day"
+            color = "brown"
+
+        # Present
+        elif punch_in_time and punch_in_time <= office_start:
+            status = "present"
+            color = "green"
+
+        # Late
+        else:
+            status = "late"
+            color = "red"
+
+        monthly_data.append({
+            "day": day,
+            "date": date_obj,
+            "punch_in": rec.punch_in.strftime("%I:%M %p") if rec.punch_in else "-",
+            "punch_out": rec.punch_out.strftime("%I:%M %p") if rec.punch_out else "-",
+            "status": status,
+            "color": color
+        })
 
     return render(request, "monthly_attendance.html", {
         "monthly_data": monthly_data,
