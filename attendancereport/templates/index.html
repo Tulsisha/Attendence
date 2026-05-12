@@ -18,8 +18,8 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="logo d-flex align-items-center p-3">
-      <img src="/static/images/logo.png" alt="logo" style="width:40px;margin-right:8px;">
-      <span>Vashudevay Tech Info</span>
+      <img src="/static/images/krishny-logo.png" alt="logo" style="width:100%; margin-right:8px;">
+      <!-- <span>Krishnay Solution</span> -->
     </div>
     <ul class="list-unstyled ps-3">
       <li><a href="#" class="text-decoration-none d-block py-2"><i class="bi bi-clock me-2"></i>Punch</a></li>
@@ -131,6 +131,38 @@
         <tbody id="leaveTableBody"></tbody>
     </table>
 </div>
+
+  <!-- Reset Password -->
+   <!-- Reset Password Section -->
+<div id="resetPasswordSection" class="m-5" style="display:none;">
+    <h4>Reset Password</h4>
+
+    <div class="card p-4 mt-3 reset-password-card">
+        <form id="resetPasswordForm" method="POST">
+                   {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Old Password</label>
+                <input type="password" id="oldPassword" name="old_password" class="form-control" placeholder="Enter old password">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">New Password</label>
+                <input type="password" id="newPassword" name="new_password" class="form-control" placeholder="Enter new password">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Confirm New Password</label>
+                <input type="password" id="confirmPassword"  name="confirm_password" class="form-control" placeholder="Confirm new password">
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100">
+                Update Password
+            </button>
+        </form>
+
+        <p id="passwordMsg" class="mt-3 text-center fw-bold"></p>
+    </div>
+</div>
   </div>
 
   <!-- ============================================ -->
@@ -153,6 +185,9 @@ const punchMenu = document.querySelector('ul li:nth-child(1)');
 const punchOutMenu = document.querySelector('ul li:nth-child(2)');
 const attendanceMenu = document.querySelector('ul li:nth-child(3)');
 const leaveMenu = document.querySelector('ul li:nth-child(4)');
+const resetPasswordMenu = document.querySelector('ul li:nth-child(5)');
+
+
 
 const punchSection = document.getElementById('punchSection');
 const attendanceSection = document.getElementById('attendanceSection');
@@ -160,12 +195,14 @@ const leaveSection = document.getElementById('leaveSection');
 
 const attendanceTable = document.getElementById('attendanceTableBody');
 const leaveTableBody = document.getElementById('leaveTableBody');
+const resetPasswordSection = document.getElementById('resetPasswordSection');
 
 /* ===================== HELPERS ===================== */
 function hideAllSections() {
   punchSection.style.display = "none";
   attendanceSection.style.display = "none";
   leaveSection.style.display = "none";
+  resetPasswordSection.style.display = "none";
 }
 
 /* ===================== ATTENDANCE ===================== */
@@ -206,7 +243,7 @@ leaveMenu.addEventListener("click", () => {
 /* ===================== PUNCH BUTTON ===================== */
 punchBtn.addEventListener("click", () => {
   const now = new Date();
-  const date = now.toISOString().split("T")[0];
+  const date = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const day = now.toLocaleString("en-US", { weekday: "long" });
 
@@ -266,7 +303,7 @@ function renderAttendanceTable() {
 
 for (let day = 1; day <= todayDate; day++) {
     const dateObj = new Date(currentYear, currentMonth, day);
-    const date = dateObj.toISOString().split("T")[0];
+    const date = `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
     const dayName = dateObj.toLocaleString("en-US", { weekday: "long" });
 
     let record = attendanceRecords.find(r => r.date === date);
@@ -428,6 +465,16 @@ function renderLeaveTable() {
 
   leaveRecords.forEach(l => {
     const tr = document.createElement("tr");
+    let rowClass = "";
+
+  if (status === "Present") rowClass = "present-row";
+  else if (status === "Late") rowClass = "late-row";
+  else if (status === "Half Day") rowClass = "halfday-row";
+  else if (status === "In Progress") rowClass = "progress-row";
+  else if (status === "Absent") rowClass = "absent-row";
+  else if (status === "Holiday") rowClass = "holiday-row";
+
+tr.className = rowClass;
     tr.innerHTML = `
       <td>${l.type}</td>
       <td>${l.from}</td>
@@ -442,6 +489,50 @@ function renderLeaveTable() {
 // ✅ VERY IMPORTANT (PAGE LOAD)
 renderLeaveTable();
 
+
+// reset password
+
+resetPasswordMenu.addEventListener("click", () => {
+  hideAllSections();
+  resetPasswordSection.style.display = "block";
+});
+// ajx pasword change
+const resetPasswordForm = document.getElementById("resetPasswordForm");
+const passwordMsg = document.getElementById("passwordMsg");
+
+resetPasswordForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(resetPasswordForm);
+
+    fetch("/change-password/", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        passwordMsg.innerText = data.message;
+
+        if (data.status === "success") {
+            passwordMsg.style.color = "green";
+
+            resetPasswordForm.reset();
+
+            setTimeout(() => {
+                window.location.href = "/loginn";
+            }, 2000);
+        } else {
+            passwordMsg.style.color = "red";
+        }
+    })
+    .catch(error => {
+        passwordMsg.innerText = "Something went wrong";
+        passwordMsg.style.color = "red";
+    });
+});
 </script>
 
 

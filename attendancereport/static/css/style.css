@@ -10,7 +10,7 @@ body {
       left: 0;
       height: 100vh;
       width: 255px;
-      background-color: #000000; /* dark blue */
+      background-color: #072147; /* dark blue */
       color: white;
       padding-top: 20px;
     }
@@ -19,7 +19,7 @@ body {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
       font-weight: bold;
       font-size: 18px;
     }
@@ -38,7 +38,7 @@ body {
 }
 
     .sidebar ul li:hover {
-      background-color: #3b82f6; /* light blue hover */
+      background-color: #0c2c5b; /* light blue hover */
     }
 
     .sidebar ul li a {
@@ -52,7 +52,7 @@ body {
     /* Top Navbar */
     .topbar {
       margin-left: 254px;
-      background-color: #000000;
+      background-color: #072147;
       color: white;
       padding: 10px 20px;
       display: flex;
@@ -88,7 +88,7 @@ body {
     }
 
     .punch-button {
-      background-color: #2563eb;
+      background-color: #072147;
       color: white;
       font-size: 36px;
       font-weight: bold;
@@ -128,3 +128,26 @@ body {
     position: relative;
     margin-right: 57px;
 } */
+/* reset password */
+
+
+.reset-password-card {
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    border: none;
+    background: #072147;
+    font-family: monospace;
+}
+
+.reset-password-card input {
+    height: 50px;
+    border-radius: 10px;
+}
+
+.reset-password-card button {
+    height: 50px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 16px;
+}

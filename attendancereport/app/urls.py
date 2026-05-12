@@ -21,4 +21,5 @@ urlpatterns = [
     # 🕒 Attendance System
     path('punch/', views.punch, name="punch"),
     path('attendance-report/', views.attendance_report, name="attendance_report"),
+    path('change-password/', views.change_password, name='change_password'),
 ]

@@ -216,3 +216,37 @@ def monthly_attendance(request):
         "year": year,
         "month": month
     })
+
+
+    # reset password page
+
+    from django.contrib.auth.decorators import login_required
+
+@login_required
+def change_password(request):
+    if request.method == "POST":
+        old_password = request.POST.get("old_password")
+        new_password = request.POST.get("new_password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if not request.user.check_password(old_password):
+            return JsonResponse({
+                "status": "error",
+                "message": "Old password is incorrect"
+            })
+
+        if new_password != confirm_password:
+            return JsonResponse({
+                "status": "error",
+                "message": "New passwords do not match"
+            })
+
+        request.user.set_password(new_password)
+        request.user.save()
+
+        return JsonResponse({
+            "status": "success",
+            "message": "Password updated successfully. Please login again."
+        })
+
+    return JsonResponse({"status": "error"})
