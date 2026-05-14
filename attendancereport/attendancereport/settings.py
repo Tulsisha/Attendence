@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-%!4%bfuu$jikn!qcg21##w06iu3i)rjc^clkb=$^9ejip7p)o7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['krishnay.pythonanywhere.com']
 
 
 # Application definition
@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'attendancereport.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'Krishnay$default',
+        'USER': 'Krishnay',
+        'PASSWORD': 'Attend@2026#DB',
+        'HOST': 'Krishnay.mysql.pythonanywhere-services.com',
+        'PORT': '3306',
     }
 }
 
