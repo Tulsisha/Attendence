@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Register</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+            min-height: 100vh;
+        }
+
+        .register-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .register-card {
+            max-width: 1000px;
+            width: 100%;
+            border-radius: 25px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+      .branding-side {
+        background: linear-gradient(135deg, #212529, #24339f);
+        color: white;
+        padding: 60px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+    }
+
+        .branding-side img {
+            width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .branding-side h2 {
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .branding-side p {
+            opacity: 0.9;
+            line-height: 1.7;
+        }
+
+        .form-side {
+            padding: 50px;
+        }
+
+        .form-title {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .form-subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group-custom i {
+            position: absolute;
+            top: 18px;
+            left: 15px;
+            color: #64748b;
+        }
+
+        .input-group-custom input {
+            padding-left: 45px;
+            height: 55px;
+            border-radius: 14px;
+            border: 1px solid #d1d5db;
+        }
+
+        .input-group-custom input:focus {
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+            border-color: #2563eb;
+        }
+
+        .btn-register {
+            height: 55px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            transition: 0.3s;
+        }
+
+        .extra-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .extra-links a {
+            text-decoration: none;
+            color: #2563eb;
+            font-size: 14px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+        }
+
+        .login-link a {
+            text-decoration: none;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .alert-msg {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        @media(max-width: 768px) {
+            .branding-side {
+                display: none;
+            }
+
+            .form-side {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="register-wrapper">
+    <div class="register-card">
+        <div class="row g-0">
+
+            <!-- Left Branding -->
+            <div class="col-md-6">
+                <div class="branding-side">
+                    <img src="/static/images/krishny-logo.png" alt="Logo">
+                    <h2>Welcome to Attendance Portal</h2>
+                    <p>
+                        Create your account to manage attendance, employees, reports,
+                        and your dashboard with a secure modern experience.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Form -->
+            <div class="col-md-6">
+                <div class="form-side">
+
+                    <h2 class="form-title">Create Account</h2>
+                    <p class="form-subtitle">Enter your details to register</p>
+
+                    <form action="/registeruser/" method="POST">
+                        {% csrf_token %}
+
+                        <div class="alert-msg">{{msg}}</div>
+
+                        <div class="input-group-custom">
+                            <i class="fa fa-envelope"></i>
+                            <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+                        </div>
+
+                        <div class="input-group-custom">
+                            <i class="fa fa-user"></i>
+                            <input type="text" name="username" class="form-control" placeholder="Username" required>
+                        </div>
+
+                        <div class="input-group-custom">
+                            <i class="fa fa-lock"></i>
+                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        </div>
+
+                        <div class="extra-links">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberCheck">
+                                <label class="form-check-label" for="rememberCheck">
+                                    Remember me
+                                </label>
+                            </div>
+
+                            <a href="#">Forgot Password?</a>
+                        </div>
+
+                        <button class="btn btn-primary btn-register w-100">
+                            Register Now
+                        </button>
+                    </form>
+
+                    <div class="login-link">
+                        Already have an account?
+                        <a href="/">Login Here</a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
